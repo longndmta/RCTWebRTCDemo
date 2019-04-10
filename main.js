@@ -12,7 +12,7 @@ import {
 }                           from "react-native";
 import {
   RTCPeerConnection,
-  RTCMediaStream,
+  //RTCMediaStream, /* old API */
   RTCIceCandidate,
   RTCSessionDescription,
   RTCView,
@@ -23,10 +23,26 @@ import io                   from "socket.io-client";
 
 
 YellowBox.ignoreWarnings(['Setting a timer', 'Unrecognized WebSocket connection', 'ListView is deprecated and will be removed']);
-const socket = io.connect("https://d6029bc8.ngrok.io", { transports: ["websocket"] });
-const configuration = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
+
+const socket = io.connect("https://8a97d9ac.ngrok.io", { transports: ["websocket"] });
+const configuration = {
+  iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+  //sdpSemantics: 'unified-plan',
+};
 const pcPeers = {};
+let container;
 let localStream;
+
+function initStream() {
+  getLocalStream(true, function (stream) {
+    localStream = stream;
+    container.setState({ selfViewSrc: stream.toURL() });
+    container.setState({
+      status: "ready",
+      info: "Please enter or create room ID",
+    });
+  });
+}
 
 function getLocalStream(isFront, callback) {
   let videoSourceId;
@@ -233,17 +249,6 @@ socket.on("connect", function (data) {
   console.log("connect");
 });
 
-function initStream() {
-  getLocalStream(true, function (stream) {
-    localStream = stream;
-    container.setState({ selfViewSrc: stream.toURL() });
-    container.setState({
-      status: "ready",
-      info: "Please enter or create room ID",
-    });
-  });
-}
-
 function logError(error) {
   console.log("logError", error);
 }
@@ -259,12 +264,11 @@ function mapHash(hash, func) {
 
 function getStats() {
   const pc = pcPeers[Object.keys(pcPeers)[0]];
-  if (
-    pc.getRemoteStreams()[0] &&
-    pc.getRemoteStreams()[0].getAudioTracks()[0]
-  ) {
+  if (pc.getRemoteStreams()[0] && pc.getRemoteStreams()[0].getAudioTracks()[0]) {
     const track = pc.getRemoteStreams()[0].getAudioTracks()[0];
+    
     console.log("track", track);
+    
     pc.getStats(
       track,
       function (report) {
@@ -274,8 +278,6 @@ function getStats() {
     );
   }
 }
-
-let container;
 
 class RCTWebRTCDemo extends Component {
   constructor(props) {
@@ -384,30 +386,30 @@ class RCTWebRTCDemo extends Component {
         <Text style={styles.welcome}>{this.state.info}</Text>
         
         <Text>{this.state.roomID}</Text>
-  
+        
         {/*{this.state.textRoomConnected && this._renderTextRoom()}*/}
         
         {/*{this.state.textRoomConnected && (
-          <View style={styles.listViewContainer}>
-            <ListView
-             dataSource={this.ds.cloneWithRows(this.state.textRoomData)}
-             renderRow={rowData => <Text>{`${rowData.user}: ${rowData.message}`}</Text>}
-             />
-            <TextInput
-              style={{
-                width: 200,
-                height: 30,
-                borderColor: "gray",
-                borderWidth: 1,
-              }}
-              onChangeText={text => this.setState({ textRoomValue: text })}
-              value={this.state.textRoomValue}
-            />
-            <TouchableHighlight onPress={this._textRoomPress}>
-              <Text>Send</Text>
-            </TouchableHighlight>
-          </View>
-        )}*/}
+         <View style={styles.listViewContainer}>
+         <ListView
+         dataSource={this.ds.cloneWithRows(this.state.textRoomData)}
+         renderRow={rowData => <Text>{`${rowData.user}: ${rowData.message}`}</Text>}
+         />
+         <TextInput
+         style={{
+         width: 200,
+         height: 30,
+         borderColor: "gray",
+         borderWidth: 1,
+         }}
+         onChangeText={text => this.setState({ textRoomValue: text })}
+         value={this.state.textRoomValue}
+         />
+         <TouchableHighlight onPress={this._textRoomPress}>
+         <Text>Send</Text>
+         </TouchableHighlight>
+         </View>
+         )}*/}
         
         <View style={{ flexDirection: "row" }}>
           <Text>
