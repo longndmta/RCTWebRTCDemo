@@ -423,25 +423,29 @@ class RCTWebRTCDemo extends Component {
           </TouchableHighlight>
         </View>
         
-        {this.state.status === "ready" ? (
-          <View>
-            <TextInput
-              // ref="roomID"
-              autoCorrect={false}
-              style={{
-                width: 200,
-                height: 40,
-                borderColor: "gray",
-                borderWidth: 1,
-              }}
-              onChangeText={text => this.setState({ roomID: text })}
-              value={this.state.roomID}
-            />
-            <TouchableHighlight onPress={this._press}>
-              <Text>Enter room</Text>
-            </TouchableHighlight>
-          </View>
-        ) : null}
+        {
+          this.state.status === "ready"
+            ?
+            (<View>
+              <TextInput
+                // ref="roomID"
+                autoCorrect={false}
+                style={{
+                  width: 200,
+                  height: 40,
+                  borderColor: "gray",
+                  borderWidth: 1,
+                }}
+                onChangeText={text => this.setState({ roomID: text })}
+                value={this.state.roomID}
+              />
+              <TouchableHighlight onPress={this._press}>
+                <Text>Enter room</Text>
+              </TouchableHighlight>
+            </View>)
+            :
+            null
+        }
         <RTCView streamURL={this.state.selfViewSrc} style={styles.selfView}/>
         {mapHash(this.state.remoteList, function (remote, index) {
           return (
