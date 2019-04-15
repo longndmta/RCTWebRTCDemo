@@ -23,8 +23,8 @@ import io                   from "socket.io-client";
 
 
 YellowBox.ignoreWarnings(['Setting a timer', 'Unrecognized WebSocket connection', 'ListView is deprecated and will be removed']);
-
-const socket = io.connect("https://8a97d9ac.ngrok.io", { transports: ["websocket"] });
+const url = 'https://5b137d1b.ngrok.io';
+const socket = io.connect(url, { transports: ["websocket"] });
 const configuration = {
   iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
   //sdpSemantics: 'unified-plan',
