@@ -232,9 +232,6 @@ class RCTWebRTCDemo extends Component {
     isFront: true,
     localStream: null,
     remoteList: {},
-    textRoomConnected: false,
-    textRoomData: [],
-    textRoomValue: "",
   };
   
   componentDidMount() {
@@ -258,7 +255,7 @@ class RCTWebRTCDemo extends Component {
   );
   
   render() {
-    const { status, info, localStream } = this.state;
+    const { status, info, localStream, remoteList } = this.state;
     
     return (
       <View style={s.container}>
@@ -269,10 +266,8 @@ class RCTWebRTCDemo extends Component {
         <RTCView streamURL={localStream} style={s.selfView}/>
         
         {
-          mapHash(this.state.remoteList, function (remote, index) {
-            return (
-              <RTCView key={index} streamURL={remote} style={s.remoteView}/>
-            );
+          mapHash(remoteList, (remote, index) => {
+            return (<RTCView key={index} streamURL={remote} style={s.remoteView}/>);
           })
         }
       </View>
